@@ -1,12 +1,6 @@
 'use strict';
 
-var util = require('util');
 var path = require('path');
-
-var inspect = function (obj) {
-  return util.inspect(obj, false, 4, true);
-};
-
 
 module.exports = function (grunt) {
 
@@ -28,19 +22,24 @@ module.exports = function (grunt) {
       return configs;
     },
 
-    dist: function (task) {
+    // dist: function (task) {
+    //   var options = task.options();
+    //   var manifest = grunt.file.readJSON(path.join(options.src, 'manifest.json'));
+    //   var background = path.join(options.dest, options.background || 'background.js');
+    //   grunt.file.write(path.join(options.dest, 'manifest.json'), JSON.stringify(manifest, null, 2));
+    // },
+
+    buildnumber: function (task) {
       var options = task.options();
       var manifest = grunt.file.readJSON(path.join(options.src, 'manifest.json'));
-      var background = path.join(options.dest, options.background || 'background.js');
-
-      // update background scripts file list.
-      manifest.background.scripts = [background];
       if (grunt.option('buildnumber')) {
         manifest.version = grunt.option('buildnumber');
       }
+      grunt.file.write(path.join(options.src, 'manifest.json'), JSON.stringify(manifest, null, 2));
+    },
 
-      grunt.file.write(path.join(options.dest, 'manifest.json'), JSON.stringify(manifest, null, 2));
-
+    compress: function (task) {
+      var options = task.options();
       if (task.data.compress) {
         var compress = grunt.config('compress') || {};
         compress.dist = {
@@ -58,17 +57,21 @@ module.exports = function (grunt) {
       }
     },
 
-    prepare: function (task) {
+    manifestmin: function (task) {
       var options = task.options();
       var configs = targets.configs(options);
       var manifest = grunt.file.readJSON(path.join(options.src, 'manifest.json'));
-      var background = path.join(options.dest, options.background || 'background.js');
+      var background = path.join(options.dest, task.data.background || 'background.js');
 
       // update concat config for scripts in background field.
       configs.concat.background = {
-        src: background,
-        dest: manifest.background.scripts
+        src: [],
+        dest: background
       };
+
+      _.each(manifest.background.scripts, function (script) {
+        configs.concat.background.src.push(path.join(options.src, script));
+      });
 
       // update uglify config for concated background.js.
       configs.uglify[background] = background;
@@ -108,18 +111,12 @@ module.exports = function (grunt) {
       // update changed grunt configs.
       configs.update();
 
-      grunt.log.subhead('Chrome Configuration is now:')
-               .subhead('  cssmin:')
-               .writeln('  ' + inspect(configs.cssmin))
-               .subhead('  concat:')
-               .writeln('  ' + inspect(configs.concat))
-               .subhead('  uglify:')
-               .writeln('  ' + inspect(configs.uglify));
-
+      // write updated manifest to dest path
+      grunt.file.write(path.join(options.dest, 'manifest.json'), JSON.stringify(manifest, null, 2));
     }
   };
 
-  grunt.registerMultiTask('chromemin', '', function () {
+  grunt.registerMultiTask('chrome', '', function () {
     targets[this.target](this);
   });
 

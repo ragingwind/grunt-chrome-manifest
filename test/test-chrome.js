@@ -46,41 +46,43 @@ describe('chrome', function () {
 
   before(directory('temp'));
 
-  var chromemin = {
+  var chrome = {
     options: {
       src: 'app',
       dest: 'dist',
+    },
+    buildnumber: {
+      update: true
+    },
+    manifestmin: {
       background: 'scripts/background.js'
     },
-    prepare: {
-      buildnumber: true,
-    },
-    dist: {
-      compress: 'package/miznet.zip'
+    compress: {
+      archive: 'package/chromeapp.zip'
     }
   };
 
 
-  it('should update the grung configs. concat, uglify and cssmin', function () {
+  it('should manifestmin', function () {
     grunt.file.copy(path.join(__dirname, 'fixtures/manifest.json'), 'app/manifest.json');
     grunt.log.muted = true;
     grunt.config.init();
-    grunt.config('chromemin', chromemin);
-    grunt.task.run('chromemin:prepare');
+    grunt.config('chrome', chrome);
+    grunt.task.run('chrome:manifestmin');
     grunt.task.start();
 
-    var options = chromemin.options;
+    var options = chrome.options;
     var configs = gruntConfigs(options);
     var manifest = grunt.file.readJSON(path.join(options.src, 'manifest.json'));
 
     // check concat list
-    assert.equal(configs.concat.background.src, path.join(options.dest, options.background));
-    _.each(configs.concat.background.dest, function (script, i) {
-      assert.equal(configs.concat.background.dest[i], manifest.background.scripts[i]);
+    _.each(configs.concat.background.src, function (script, i) {
+      assert.equal(configs.concat.background.src[i], path.join(options.src, manifest.background.scripts[i]));
     });
+    assert.equal(configs.concat.background.dest, path.join(options.dest, chrome.manifestmin.background));
 
-    assert.ok(configs.uglify[path.join(options.dest, options.background)]);
-    assert.equal(configs.uglify[path.join(options.dest, options.background)], 'dist/scripts/background.js');
+    assert.ok(configs.uglify[path.join(options.dest, chrome.manifestmin.background)]);
+    assert.equal(configs.uglify[path.join(options.dest, chrome.manifestmin.background)], 'dist/scripts/background.js');
 
     for (var cs = 0, max = manifest.content_scripts.length; cs < max; ++cs) {
       var file, dest;
@@ -100,28 +102,32 @@ describe('chrome', function () {
         assert.equal(configs.cssmin[dest], path.join(options.src, file));
       }
     }
+
+    manifest = grunt.file.readJSON(path.join(options.dest, 'manifest.json'));
+    assert.ok(manifest);
+    //????
   });
 
-  it('should update manifest file', function () {
-    grunt.file.copy(path.join(__dirname, 'fixtures/manifest.json'), 'app/manifest.json');
-    grunt.log.muted = true;
-    grunt.config.init();
-    grunt.config('chromemin', chromemin);
-    grunt.task.run('chromemin:dist');
-    grunt.task.start();
+  // it('should update manifest file', function () {
+  //   grunt.file.copy(path.join(__dirname, 'fixtures/manifest.json'), 'app/manifest.json');
+  //   grunt.log.muted = true;
+  //   grunt.config.init();
+  //   grunt.config('chrome', chrome);
+  //   grunt.task.run('chrome:dist');
+  //   grunt.task.start();
 
-    var options = chromemin.options;
-    var manifest = grunt.file.readJSON(path.join(options.dest, 'manifest.json'));
-    var compress = grunt.config('compress');
+  //   var options = chrome.options;
+  //   var manifest = grunt.file.readJSON(path.join(options.dest, 'manifest.json'));
+  //   var compress = grunt.config('compress');
 
-    assert.equal(manifest.version, '0.0.2');
-    assert.ok(manifest.background);
-    assert.ok(manifest.background.scripts.length > 0);
-    assert.equal(manifest.background.scripts[0], path.join(options.dest, options.background));
+  //   assert.equal(manifest.version, '0.0.2');
+  //   assert.ok(manifest.background);
+  //   assert.ok(manifest.background.scripts.length > 0);
+  //   assert.equal(manifest.background.scripts[0], path.join(options.dest, options.background));
 
-    assert.ok(compress);
-    assert.equal(compress.dist.options.archive, chromemin.dist.compress);
-    assert.equal(compress.dist.files[0].cwd, options.dest);
-  });
+  //   assert.ok(compress);
+  //   assert.equal(compress.dist.options.archive, chrome.dist.compress);
+  //   assert.equal(compress.dist.files[0].cwd, options.dest);
+  // });
 
 });
