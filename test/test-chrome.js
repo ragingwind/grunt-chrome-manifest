@@ -7,6 +7,7 @@ var mkdirp = require('mkdirp');
 
 grunt.task.init([]);
 grunt.config.init({});
+grunt.loadNpmTasks('grunt-contrib-compress');
 
 var opts = grunt.cli.options;
 opts.redirect = !opts.silent;
@@ -103,31 +104,42 @@ describe('chrome', function () {
       }
     }
 
+    // check updated manifest.json
     manifest = grunt.file.readJSON(path.join(options.dest, 'manifest.json'));
     assert.ok(manifest);
-    //????
+    assert.ok(manifest.background);
+    assert.ok(manifest.background.scripts.length > 0);
+    assert.equal(manifest.background.scripts[0], path.join(options.dest, chrome.manifestmin.background));
+
   });
 
-  // it('should update manifest file', function () {
-  //   grunt.file.copy(path.join(__dirname, 'fixtures/manifest.json'), 'app/manifest.json');
-  //   grunt.log.muted = true;
-  //   grunt.config.init();
-  //   grunt.config('chrome', chrome);
-  //   grunt.task.run('chrome:dist');
-  //   grunt.task.start();
+  it('should change the buildnumber', function () {
+    grunt.file.copy(path.join(__dirname, 'fixtures/manifest.json'), 'app/manifest.json');
+    grunt.log.muted = false;
+    grunt.config.init();
+    grunt.config('chrome', chrome);
+    grunt.task.run('chrome:buildnumber');
+    grunt.task.start();
 
-  //   var options = chrome.options;
-  //   var manifest = grunt.file.readJSON(path.join(options.dest, 'manifest.json'));
-  //   var compress = grunt.config('compress');
+    var manifest = grunt.file.readJSON(path.join(chrome.options.src, 'manifest.json'));
+    assert.equal(manifest.version, '0.0.2');
+  });
 
-  //   assert.equal(manifest.version, '0.0.2');
-  //   assert.ok(manifest.background);
-  //   assert.ok(manifest.background.scripts.length > 0);
-  //   assert.equal(manifest.background.scripts[0], path.join(options.dest, options.background));
+  it('should compress task', function () {
+    grunt.file.copy(path.join(__dirname, 'fixtures/manifest.json'), 'app/manifest.json');
+    grunt.log.muted = false;
+    grunt.config.init();
+    grunt.config('chrome', chrome);
+    grunt.task.run('chrome:compress').start();
 
-  //   assert.ok(compress);
-  //   assert.equal(compress.dist.options.archive, chrome.dist.compress);
-  //   assert.equal(compress.dist.files[0].cwd, options.dest);
-  // });
+    var options = chrome.options;
+    var compress = grunt.config('compress');
+
+    assert.ok(compress);
+    assert.equal(compress.dist.options.archive, chrome.compress.archive);
+    assert.equal(compress.dist.files[0].cwd, options.dest);
+
+    grunt.task.run('compress').start();
+  });
 
 });

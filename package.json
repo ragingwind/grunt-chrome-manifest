@@ -20,6 +20,9 @@
   "scripts": {
     "test": "grunt"
   },
+  "dependencies": {
+    "grunt-contrib-compress": "~0.4.0"
+  },
   "devDependencies": {
     "grunt": "~0.4.0",
     "mocha": "~1.7.4",

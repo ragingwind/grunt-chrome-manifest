@@ -22,39 +22,45 @@ module.exports = function (grunt) {
       return configs;
     },
 
-    // dist: function (task) {
-    //   var options = task.options();
-    //   var manifest = grunt.file.readJSON(path.join(options.src, 'manifest.json'));
-    //   var background = path.join(options.dest, options.background || 'background.js');
-    //   grunt.file.write(path.join(options.dest, 'manifest.json'), JSON.stringify(manifest, null, 2));
-    // },
-
+    // increase build version in manifest.json.
+    // refer to http://developer.chrome.com/extensions/manifest.html#version
     buildnumber: function (task) {
       var options = task.options();
       var manifest = grunt.file.readJSON(path.join(options.src, 'manifest.json'));
-      if (grunt.option('buildnumber')) {
-        manifest.version = grunt.option('buildnumber');
-      }
+      var buildnumber = manifest.version.split('.');
+      var numberup = function (numbers, index) {
+        var number = numbers[index];
+        if (number) {
+          if (number + 1 <= 65535) {
+            numbers[index]++;
+            return numbers.join('.');
+          } else {
+            numberup(numbers, ++index);
+          }
+        } else {
+          throw 'Task could not update build number ' + buildnumber;
+        }
+      };
+      manifest.version = numberup(buildnumber, buildnumber.length - 1);
       grunt.file.write(path.join(options.src, 'manifest.json'), JSON.stringify(manifest, null, 2));
     },
 
     compress: function (task) {
       var options = task.options();
-      if (task.data.compress) {
-        var compress = grunt.config('compress') || {};
-        compress.dist = {
-          options: {
-            archive: task.data.compress
-          },
-          files: [{
-            expand: true,
-            cwd: options.dest,
-            src: ['**'],
-            dest: ''
-          }]
-        };
-        grunt.config('compress', compress);
-      }
+      var compress = grunt.config('compress') || {};
+      compress.dist = {
+        options: {
+          archive: task.data.archive
+        },
+        files: [{
+          expand: true,
+          cwd: options.dest,
+          src: ['**'],
+          dest: ''
+        }]
+      };
+
+      grunt.config('compress', compress);
     },
 
     manifestmin: function (task) {
@@ -87,31 +93,11 @@ module.exports = function (grunt) {
         });
       });
 
-      // update version in manifest.
-      // refer to http://developer.chrome.com/extensions/manifest.html#version
-      if (task.data.buildnumber) {
-        var buildnumber = manifest.version.split('.');
-        var numberup = function (numbers, index) {
-          var number = numbers[index];
-          if (number) {
-            if (number + 1 <= 65535) {
-              numbers[index]++;
-              return numbers.join('.');
-            } else {
-              numberup(numbers, ++index);
-            }
-          } else {
-            throw 'Task could not update build number ' + buildnumber;
-          }
-        };
-
-        grunt.option('buildnumber', numberup(buildnumber, buildnumber.length - 1));
-      }
-
       // update changed grunt configs.
       configs.update();
 
       // write updated manifest to dest path
+      manifest.background.scripts = [background];
       grunt.file.write(path.join(options.dest, 'manifest.json'), JSON.stringify(manifest, null, 2));
     }
   };
