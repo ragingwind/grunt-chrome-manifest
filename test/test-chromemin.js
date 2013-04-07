@@ -29,7 +29,7 @@ var directory = function directory(dir) {
   };
 };
 
-var gruntConfigs = function(options) {
+var gruntConfigs = function (options) {
   var configs = {};
   configs.uglifyName = options.uglify || 'uglify';
   configs.cssminName = options.cssmin || 'cssmin';
@@ -37,8 +37,8 @@ var gruntConfigs = function(options) {
     concat: grunt.config('concat') || {},
     uglify: grunt.config(configs.uglifyName) || {},
     cssmin: grunt.config(configs.cssminName) || {}
-  }
-}
+  };
+};
 
 var _ = grunt.util._;
 
@@ -75,7 +75,7 @@ describe('chrome', function () {
 
     // check concat list
     assert.equal(configs.concat.background.src, path.join(options.dest, options.background));
-    _.each(configs.concat.background.dest, function(script, i) {
+    _.each(configs.concat.background.dest, function (script, i) {
       assert.equal(configs.concat.background.dest[i], manifest.background.scripts[i]);
     });
 
@@ -83,18 +83,19 @@ describe('chrome', function () {
     assert.equal(configs.uglify[path.join(options.dest, options.background)], 'dist/scripts/background.js');
 
     for (var cs = 0, max = manifest.content_scripts.length; cs < max; ++cs) {
+      var file, dest;
       // check uglify list
-      for (var i = 0, max = manifest.content_scripts[cs].js.length; i < max; ++i) {
-        var file = 'scripts/contentscript-' + parseInt(cs) + parseInt(i) + '.js';
-        var dest = path.join(options.dest, file);
+      for (var i = 0, csmax = manifest.content_scripts[cs].js.length; i < csmax; ++i) {
+        file = 'scripts/contentscript-' + parseInt(cs, 10) + parseInt(i, 10) + '.js';
+        dest = path.join(options.dest, file);
         assert.ok(configs.uglify[dest]);
         assert.equal(configs.uglify[dest], path.join(options.src, file));
       }
 
       // check cssmin list
       for (i = 0, max = manifest.content_scripts[cs].css.length; i < max; ++i) {
-        var file = 'styles/contentstyle-' + parseInt(cs) + parseInt(i) + '.css';
-        var dest = path.join(options.dest, file);
+        file = 'styles/contentstyle-' + parseInt(cs, 10) + parseInt(i, 10) + '.css';
+        dest = path.join(options.dest, file);
         assert.ok(configs.cssmin[dest]);
         assert.equal(configs.cssmin[dest], path.join(options.src, file));
       }

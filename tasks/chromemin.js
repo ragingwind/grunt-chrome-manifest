@@ -13,22 +13,22 @@ module.exports = function (grunt) {
   var _ = grunt.util._;
 
   var targets = {
-    configs: function(options) {
+    configs: function (options) {
       var configs = {};
       configs.uglifyName = options.uglify || 'uglify';
       configs.cssminName = options.cssmin || 'cssmin';
       configs.concat = grunt.config('concat') || {};
       configs.uglify = grunt.config(configs.uglifyName) || {};
       configs.cssmin = grunt.config(configs.cssminName) || {};
-      configs.update = function() {
+      configs.update = function () {
         grunt.config('concat', this.concat);
         grunt.config(this.cssminName, this.cssmin);
         grunt.config(this.uglifyName, this.uglify);
-      }
+      };
       return configs;
     },
 
-    dist: function(task) {
+    dist: function (task) {
       var options = task.options();
       var manifest = grunt.file.readJSON(path.join(options.src, 'manifest.json'));
       var background = path.join(options.dest, options.background || 'background.js');
@@ -53,33 +53,33 @@ module.exports = function (grunt) {
             src: ['**'],
             dest: ''
           }]
-        }
+        };
         grunt.config('compress', compress);
       }
     },
 
-    prepare: function(task) {
+    prepare: function (task) {
       var options = task.options();
       var configs = targets.configs(options);
       var manifest = grunt.file.readJSON(path.join(options.src, 'manifest.json'));
       var background = path.join(options.dest, options.background || 'background.js');
 
       // update concat config for scripts in background field.
-      configs.concat['background'] = {
+      configs.concat.background = {
         src: background,
         dest: manifest.background.scripts
-      }
+      };
 
       // update uglify config for concated background.js.
       configs.uglify[background] = background;
 
       // update uglify and css config for content scripts field.
-      _.each(manifest.content_scripts, function(contentScript) {
-        _.each(contentScript.js, function(js) {
+      _.each(manifest.content_scripts, function (contentScript) {
+        _.each(contentScript.js, function (js) {
           configs.uglify[path.join(options.dest, js)] = path.join(options.src, js);
         });
 
-        _.each(contentScript.css, function(css) {
+        _.each(contentScript.css, function (css) {
           configs.cssmin[path.join(options.dest, css)] = path.join(options.src, css);
         });
       });
@@ -88,7 +88,7 @@ module.exports = function (grunt) {
       // refer to http://developer.chrome.com/extensions/manifest.html#version
       if (task.data.buildnumber) {
         var buildnumber = manifest.version.split('.');
-        var numberup = function(numbers, index) {
+        var numberup = function (numbers, index) {
           var number = numbers[index];
           if (number) {
             if (number + 1 <= 65535) {
@@ -100,7 +100,7 @@ module.exports = function (grunt) {
           } else {
             throw 'Task could not update build number ' + buildnumber;
           }
-        }
+        };
 
         grunt.option('buildnumber', numberup(buildnumber, buildnumber.length - 1));
       }
