@@ -1,0 +1,36 @@
+{
+  "name": "grunt-manifestmin",
+  "version": "0.0.1",
+  "description": "",
+  "keywords": [
+    "gruntplugin",
+    "grunt",
+    "yeoman",
+    "chrome",
+    "manifest"
+  ],
+  "homepage": "",
+  "bugs": "",
+  "author": "",
+  "main": "Gruntfile.js",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "scripts": {
+    "test": "grunt"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.0",
+    "mocha": "~1.7.4",
+    "mkdirp": "~0.3.1",
+    "rimraf": "~2.0.1",
+    "grunt-contrib-jshint": "~0.1.1"
+  },
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "licenses": {
+    "type": "BSD"
+  }
+}
