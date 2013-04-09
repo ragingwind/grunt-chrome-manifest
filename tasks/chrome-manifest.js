@@ -22,8 +22,9 @@ module.exports = function (grunt) {
       return configs;
     },
 
-    // increase build version in manifest.json.
-    // refer to http://developer.chrome.com/extensions/manifest.html#version
+    // auto increment build version in manifest.json.
+    // if you want more information please visit to
+    // http://developer.chrome.com/extensions/manifest.html#version
     buildnumber: function (task) {
       var options = task.options();
       var manifest = grunt.file.readJSON(path.join(options.src, 'manifest.json'));
@@ -45,25 +46,11 @@ module.exports = function (grunt) {
       grunt.file.write(path.join(options.src, 'manifest.json'), JSON.stringify(manifest, null, 2));
     },
 
-    compress: function (task) {
-      var options = task.options();
-      var compress = grunt.config('compress') || {};
-      compress.dist = {
-        options: {
-          archive: task.data.archive
-        },
-        files: [{
-          expand: true,
-          cwd: options.dest,
-          src: ['**'],
-          dest: ''
-        }]
-      };
-
-      grunt.config('compress', compress);
-    },
-
-    manifestmin: function (task) {
+    // usemin task for scripts and css files in manifest.
+    // get scripts/css file list from manifest to handle, and initialize
+    // the grunt configuration appropriately, and automatically.
+    // then replaces references to non-optimized scripts into background scripts.
+    usemin: function (task) {
       var options = task.options();
       var configs = targets.configs(options);
       var manifest = grunt.file.readJSON(path.join(options.src, 'manifest.json'));

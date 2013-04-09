@@ -55,7 +55,7 @@ describe('chrome', function () {
     buildnumber: {
       update: true
     },
-    manifestmin: {
+    usemin: {
       background: 'scripts/background.js'
     },
     compress: {
@@ -64,12 +64,12 @@ describe('chrome', function () {
   };
 
 
-  it('should manifestmin', function () {
+  it('should works with manifest.json', function () {
     grunt.file.copy(path.join(__dirname, 'fixtures/manifest.json'), 'app/manifest.json');
     grunt.log.muted = true;
     grunt.config.init();
     grunt.config('chrome', chrome);
-    grunt.task.run('chrome:manifestmin');
+    grunt.task.run('chrome:usemin');
     grunt.task.start();
 
     var options = chrome.options;
@@ -80,10 +80,10 @@ describe('chrome', function () {
     _.each(configs.concat.background.src, function (script, i) {
       assert.equal(configs.concat.background.src[i], path.join(options.src, manifest.background.scripts[i]));
     });
-    assert.equal(configs.concat.background.dest, path.join(options.dest, chrome.manifestmin.background));
+    assert.equal(configs.concat.background.dest, path.join(options.dest, chrome.usemin.background));
 
-    assert.ok(configs.uglify[path.join(options.dest, chrome.manifestmin.background)]);
-    assert.equal(configs.uglify[path.join(options.dest, chrome.manifestmin.background)], 'dist/scripts/background.js');
+    assert.ok(configs.uglify[path.join(options.dest, chrome.usemin.background)]);
+    assert.equal(configs.uglify[path.join(options.dest, chrome.usemin.background)], 'dist/scripts/background.js');
 
     for (var cs = 0, max = manifest.content_scripts.length; cs < max; ++cs) {
       var file, dest;
@@ -109,7 +109,7 @@ describe('chrome', function () {
     assert.ok(manifest);
     assert.ok(manifest.background);
     assert.ok(manifest.background.scripts.length > 0);
-    assert.equal(manifest.background.scripts[0], path.join(options.dest, chrome.manifestmin.background));
+    assert.equal(manifest.background.scripts[0], path.join(options.dest, chrome.usemin.background));
 
   });
 
@@ -123,23 +123,6 @@ describe('chrome', function () {
 
     var manifest = grunt.file.readJSON(path.join(chrome.options.src, 'manifest.json'));
     assert.equal(manifest.version, '0.0.2');
-  });
-
-  it('should compress task', function () {
-    grunt.file.copy(path.join(__dirname, 'fixtures/manifest.json'), 'app/manifest.json');
-    grunt.log.muted = false;
-    grunt.config.init();
-    grunt.config('chrome', chrome);
-    grunt.task.run('chrome:compress').start();
-
-    var options = chrome.options;
-    var compress = grunt.config('compress');
-
-    assert.ok(compress);
-    assert.equal(compress.dist.options.archive, chrome.compress.archive);
-    assert.equal(compress.dist.files[0].cwd, options.dest);
-
-    grunt.task.run('compress').start();
   });
 
 });
