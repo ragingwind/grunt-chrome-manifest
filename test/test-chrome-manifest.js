@@ -7,7 +7,6 @@ var mkdirp = require('mkdirp');
 
 grunt.task.init([]);
 grunt.config.init({});
-grunt.loadNpmTasks('grunt-contrib-compress');
 
 var opts = grunt.cli.options;
 opts.redirect = !opts.silent;
@@ -47,7 +46,7 @@ describe('chrome', function () {
 
   before(directory('temp'));
 
-  var chrome = {
+  var chromeManifest = {
     options: {
       src: 'app',
       dest: 'dist',
@@ -57,9 +56,6 @@ describe('chrome', function () {
     },
     usemin: {
       background: 'scripts/background.js'
-    },
-    compress: {
-      archive: 'package/chromeapp.zip'
     }
   };
 
@@ -68,11 +64,11 @@ describe('chrome', function () {
     grunt.file.copy(path.join(__dirname, 'fixtures/manifest.json'), 'app/manifest.json');
     grunt.log.muted = true;
     grunt.config.init();
-    grunt.config('chrome', chrome);
-    grunt.task.run('chrome:usemin');
+    grunt.config('chromeManifest', chromeManifest);
+    grunt.task.run('chromeManifest:usemin');
     grunt.task.start();
 
-    var options = chrome.options;
+    var options = chromeManifest.options;
     var configs = gruntConfigs(options);
     var manifest = grunt.file.readJSON(path.join(options.src, 'manifest.json'));
 
@@ -80,10 +76,10 @@ describe('chrome', function () {
     _.each(configs.concat.background.src, function (script, i) {
       assert.equal(configs.concat.background.src[i], path.join(options.src, manifest.background.scripts[i]));
     });
-    assert.equal(configs.concat.background.dest, path.join(options.dest, chrome.usemin.background));
+    assert.equal(configs.concat.background.dest, path.join(options.dest, chromeManifest.usemin.background));
 
-    assert.ok(configs.uglify[path.join(options.dest, chrome.usemin.background)]);
-    assert.equal(configs.uglify[path.join(options.dest, chrome.usemin.background)], 'dist/scripts/background.js');
+    assert.ok(configs.uglify[path.join(options.dest, chromeManifest.usemin.background)]);
+    assert.equal(configs.uglify[path.join(options.dest, chromeManifest.usemin.background)], 'dist/scripts/background.js');
 
     for (var cs = 0, max = manifest.content_scripts.length; cs < max; ++cs) {
       var file, dest;
@@ -109,7 +105,7 @@ describe('chrome', function () {
     assert.ok(manifest);
     assert.ok(manifest.background);
     assert.ok(manifest.background.scripts.length > 0);
-    assert.equal(manifest.background.scripts[0], path.join(options.dest, chrome.usemin.background));
+    assert.equal(manifest.background.scripts[0], path.join(options.dest, chromeManifest.usemin.background));
 
   });
 
@@ -117,11 +113,11 @@ describe('chrome', function () {
     grunt.file.copy(path.join(__dirname, 'fixtures/manifest.json'), 'app/manifest.json');
     grunt.log.muted = false;
     grunt.config.init();
-    grunt.config('chrome', chrome);
-    grunt.task.run('chrome:buildnumber');
+    grunt.config('chromeManifest', chromeManifest);
+    grunt.task.run('chromeManifest:buildnumber');
     grunt.task.start();
 
-    var manifest = grunt.file.readJSON(path.join(chrome.options.src, 'manifest.json'));
+    var manifest = grunt.file.readJSON(path.join(chromeManifest.options.src, 'manifest.json'));
     assert.equal(manifest.version, '0.0.2');
   });
 

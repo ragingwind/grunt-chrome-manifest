@@ -89,7 +89,7 @@ module.exports = function (grunt) {
     }
   };
 
-  grunt.registerMultiTask('chrome', '', function () {
+  grunt.registerMultiTask('chromeManifest', '', function () {
     targets[this.target](this);
   });
 
