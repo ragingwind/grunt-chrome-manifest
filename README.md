@@ -1,6 +1,6 @@
 # grunt-chrome-manifest
 
-> Replaces references to non-optimized scripts or stylesheets into a set of HTML files (or any templates/views).
+> get scripts/css file list from manifest to handle, and initialize the grunt configuration appropriately, and automatically. then replaces references to non-optimized scripts into background scripts. and auto increment build version in manifest.json.
 
 Watch out, this task is designed for Grunt 0.4 and upwards.
 
