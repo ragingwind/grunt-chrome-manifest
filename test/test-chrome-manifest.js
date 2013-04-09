@@ -105,7 +105,7 @@ describe('chrome', function () {
     assert.ok(manifest);
     assert.ok(manifest.background);
     assert.ok(manifest.background.scripts.length > 0);
-    assert.equal(manifest.background.scripts[0], path.join(options.dest, chromeManifest.usemin.background));
+    assert.equal(manifest.background.scripts[0], chromeManifest.usemin.background);
 
   });
 

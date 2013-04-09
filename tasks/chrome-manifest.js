@@ -84,7 +84,7 @@ module.exports = function (grunt) {
       configs.update();
 
       // write updated manifest to dest path
-      manifest.background.scripts = [background];
+      manifest.background.scripts = [task.data.background || 'background.js'];
       grunt.file.write(path.join(options.dest, 'manifest.json'), JSON.stringify(manifest, null, 2));
     }
   };
