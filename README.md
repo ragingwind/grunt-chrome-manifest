@@ -11,8 +11,65 @@ If you haven't used [grunt][] before, be sure to check out the [Getting Started]
 npm install grunt-chrome-manifest --save-dev
 ```
 
+Once the plugin has been installed, it may be enabled inside your Gruntfile with this line of JavaScript:
+
+```js
+grunt.loadNpmTasks('grunt-chrome-manifest');
+grunt.registerTask('default', ['chrome', 'concurrent:target2']);
+```
+
+
 [grunt]: http://gruntjs.com/
 [Getting Started]: https://github.com/gruntjs/grunt/blob/devel/docs/getting_started.md
+
+## Documentation
+
+### Example usage
+```javascript
+chromeManifest: {
+  options: {
+    src: '<%= srcDir %>',
+    dest: '<%= destDir %>',
+  },
+  buildnumber: {
+    update: true
+  },
+  usemin: {
+    background: 'scripts/background.js'
+  }
+};
+```
+
+### Config
+#### options
+##### src
+**Required**
+Type: 'String'
+
+Path of src directory
+
+##### dest
+**Required**
+Type: 'String'
+
+Path of dest directory
+
+#### buildnumber
+##### update
+**Required**
+Type: 'Boolean'
+
+Flag of auto-increment build number.
+
+#### usemin
+##### background
+**Required**
+Type: 'String'
+Sub path of background script
+
+## Tests
+
+Grunt currently doesn't have a way to test tasks directly. You can test this task by running `grunt` and manually verify that it works.
 
 ## License
 
