@@ -61,7 +61,7 @@ Flag of auto-increment build number.
 #### background
 Type: 'String'
 
-Sub directory where the transformed background script.
+Relative path of the transformed background script.
 
 ## Tests
 
