@@ -61,8 +61,7 @@ describe('chrome', function () {
     var target = targets.dist;
     var src = target.src;
     var dest = target.dest;
-    var srcBackground = path.join(src, target.options.background);
-    var destBackground = path.join(dest, target.options.background);
+    var background = path.join(dest, target.options.background || 'background.js');
 
     grunt.file.copy(path.join(__dirname, 'fixtures/manifest.json'), 'app/manifest.json');
     grunt.log.muted = true;
@@ -80,9 +79,9 @@ describe('chrome', function () {
     _.each(concat.background.src, function (script, i) {
       assert.equal(concat.background.src[i], path.join(src, manifest.background.scripts[i]));
     });
-    assert.equal(concat.background.dest, destBackground);
-    assert.ok(uglify[destBackground]);
-    assert.equal(uglify[destBackground], destBackground);
+    assert.equal(concat.background.dest, background);
+    assert.ok(uglify[background]);
+    assert.equal(uglify[background], background);
 
     // check cssmin and uglify list on contents scripts.
     for (var cs = 0, max = manifest.content_scripts.length; cs < max; ++cs) {
@@ -105,7 +104,7 @@ describe('chrome', function () {
     assert.ok(manifest);
     assert.ok(manifest.background);
     assert.ok(manifest.background.scripts.length > 0);
-    assert.equal(manifest.background.scripts[0], target.options.background);
+    assert.equal(manifest.background.scripts[0], target.options.background || 'background.js');
 
   });
 

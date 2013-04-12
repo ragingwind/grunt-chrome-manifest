@@ -15,7 +15,7 @@ Once the plugin has been installed, it may be enabled inside your Gruntfile with
 
 ```js
 grunt.loadNpmTasks('grunt-chrome-manifest');
-grunt.registerTask('default', ['chrome', 'concurrent:target2']);
+grunt.registerTask('default', ['chromeManifest:dist']);
 ```
 
 
@@ -27,45 +27,41 @@ grunt.registerTask('default', ['chrome', 'concurrent:target2']);
 ### Example usage
 ```javascript
 chromeManifest: {
-  options: {
-    src: '<%= srcDir %>',
-    dest: '<%= destDir %>',
-  },
-  buildnumber: {
-    update: true
-  },
-  usemin: {
-    background: 'scripts/background.js'
+  dist: {
+    options: {
+      buildnumber: true,
+      background: 'scripts/background.js'
+    },
+    src: 'app',
+    dest: 'dist'
   }
 };
 ```
 
 ### Config
-#### options
-##### src
+
+#### src
 **Required**
 Type: 'String'
 
-Path of src directory
+Base directory where the origin source files
 
-##### dest
+#### dest
 **Required**
 Type: 'String'
 
-Path of dest directory
+Base directory where the transformed files should be output.
 
+### Options
 #### buildnumber
-##### update
-**Required**
 Type: 'Boolean'
 
 Flag of auto-increment build number.
 
-#### usemin
-##### background
-**Required**
+#### background
 Type: 'String'
-Sub path of background script
+
+Sub directory where the transformed background script.
 
 ## Tests
 
