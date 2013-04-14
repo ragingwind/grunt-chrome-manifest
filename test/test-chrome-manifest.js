@@ -29,17 +29,6 @@ var directory = function directory(dir) {
   };
 };
 
-// var gruntConfigs = function (options) {
-//   var configs = {};
-//   configs.uglifyName = options.uglify || 'uglify';
-//   configs.cssminName = options.cssmin || 'cssmin';
-//   return {
-//     concat: grunt.config('concat') || {},
-//     uglify: grunt.config(configs.uglifyName) || {},
-//     cssmin: grunt.config(configs.cssminName) || {}
-//   };
-// };
-
 var _ = grunt.util._;
 
 describe('chrome', function () {
