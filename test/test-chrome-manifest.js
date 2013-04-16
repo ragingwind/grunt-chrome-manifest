@@ -55,7 +55,7 @@ describe('chrome', function () {
     grunt.file.copy(path.join(__dirname, 'fixtures/manifest.json'), 'app/manifest.json');
     grunt.log.muted = true;
     grunt.config.init();
-    grunt.config('chromeManifest', {dist:target});
+    grunt.config('chromeManifest', {dist: target});
     grunt.task.run('chromeManifest:dist');
     grunt.task.start();
 
@@ -74,14 +74,14 @@ describe('chrome', function () {
 
     // check cssmin and uglify list on contents scripts.
     for (var cs = 0, max = manifest.content_scripts.length; cs < max; ++cs) {
-      var file;
-      for (var i = 0, max = manifest.content_scripts[cs].js.length; i < max; ++i) {
+      var file, i, maxChild;
+      for (i = 0, maxChild = manifest.content_scripts[cs].js.length; i < maxChild; ++i) {
         file = 'scripts/contentscript-' + parseInt(cs, 10) + parseInt(i, 10) + '.js';
         assert.ok(uglify[path.join(dest, file)]);
         assert.equal(uglify[path.join(dest, file)], path.join(src, file));
       }
 
-      for (i = 0, max = manifest.content_scripts[cs].css.length; i < max; ++i) {
+      for (i = 0, maxChild = manifest.content_scripts[cs].css.length; i < maxChild; ++i) {
         file = 'styles/contentstyle-' + parseInt(cs, 10) + parseInt(i, 10) + '.css';
         assert.ok(cssmin[path.join(dest, file)]);
         assert.equal(cssmin[path.join(dest, file)], path.join(src, file));
@@ -104,7 +104,7 @@ describe('chrome', function () {
     grunt.log.muted = false;
     grunt.config.init();
     target.options.buildnumber = true;
-    grunt.config('chromeManifest', {dist:target});
+    grunt.config('chromeManifest', {dist: target});
     grunt.task.run('chromeManifest:dist');
     grunt.task.start();
 
