@@ -15,7 +15,7 @@ module.exports = function (grunt) {
       indentSize: 4
     });
 
-    this.files.forEach(function(file) {
+    this.files.forEach(function (file) {
       var src = file.src[0];
       var dest = file.dest;
       var manifest = grunt.file.readJSON(path.join(src, 'manifest.json'));
