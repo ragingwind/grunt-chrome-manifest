@@ -4,6 +4,7 @@
   "manifest_version": 2,
   "background": {
     "scripts": [
+      "scripts/willbe-remove-only-for-debug.js",
       "components/jquery/jquery.min.js",
       "scripts/user-script.js",
       "scripts/background.js"

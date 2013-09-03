@@ -38,7 +38,12 @@ describe('chrome', function () {
   var targets = {
     dist: {
       options: {
-        background: 'scripts/background.js'
+        background: {
+          exclude: [
+            'scripts/willbe-remove-only-for-debug.js'
+          ],
+          target: 'scripts/background.js'
+        }
       },
       src: 'app',
       dest: 'dist'
@@ -50,7 +55,8 @@ describe('chrome', function () {
     var target = targets.dist;
     var src = target.src;
     var dest = target.dest;
-    var background = path.join(dest, target.options.background || 'background.js');
+    var background = path.join(dest, target.options.background.target || 'background.js');
+    var exclude = target.options.background.exclude;
 
     grunt.file.copy(path.join(__dirname, 'fixtures/manifest.json'), 'app/manifest.json');
     grunt.log.muted = true;
@@ -66,7 +72,9 @@ describe('chrome', function () {
 
     // check concat and uglify list on background scripts.
     _.each(concat.background.src, function (script, i) {
-      assert.equal(concat.background.src[i], path.join(src, manifest.background.scripts[i]));
+      if (_.indexOf(exclude, script) !== -1) {
+        assert.equal(concat.background.src[i], path.join(src, manifest.background.scripts[i]));
+      }
     });
     assert.equal(concat.background.dest, background);
     assert.ok(uglify[background]);
@@ -93,7 +101,11 @@ describe('chrome', function () {
     assert.ok(manifest);
     assert.ok(manifest.background);
     assert.ok(manifest.background.scripts.length > 0);
-    assert.equal(manifest.background.scripts[0], target.options.background || 'background.js');
+    assert.equal(manifest.background.scripts[0], target.options.background.target || 'background.js');
+
+    _.each(manifest.background.scripts, function (script) {
+      assert.ok(_.indexOf(exclude, script) === -1);
+    });
 
   });
 

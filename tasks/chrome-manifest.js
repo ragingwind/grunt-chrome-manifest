@@ -19,7 +19,8 @@ module.exports = function (grunt) {
       var src = file.src[0];
       var dest = file.dest;
       var manifest = grunt.file.readJSON(path.join(src, 'manifest.json'));
-      var background = path.join(dest, options.background);
+      var background = path.join(dest, options.background.target);
+      var exclude = options.background.exclude;
       var concat = grunt.config('concat') || {};
       var uglify = grunt.config(options.uglify) || {};
       var cssmin = grunt.config(options.cssmin) || {};
@@ -32,8 +33,15 @@ module.exports = function (grunt) {
       };
 
       _.each(manifest.background.scripts, function (script) {
-        concat.background.src.push(path.join(src, script));
+        if (_.indexOf(exclude, script) === -1) {
+          concat.background.src.push(path.join(src, script));
+        }
       });
+
+      // remove file in manifest.json
+      _.each(exclude, function(script) {
+        manifest.background.scripts = _.without(manifest.background.scripts, script);
+      })
 
       // update uglify config for concated background.js.
       uglify[background] = background;
@@ -72,7 +80,7 @@ module.exports = function (grunt) {
       }
 
       // set updated background script list to manifest on dest.
-      manifest.background.scripts = [options.background];
+      manifest.background.scripts = [options.background.target];
 
       // write updated manifest to dest path
       grunt.file.write(path.join(dest, 'manifest.json'), JSON.stringify(manifest, null, options.indentSize));
