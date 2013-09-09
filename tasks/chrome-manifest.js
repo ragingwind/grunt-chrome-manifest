@@ -4,7 +4,8 @@ var path = require('path');
 
 module.exports = function (grunt) {
 
-  var _ = grunt.util._;
+  var _ = grunt.util._,
+          isNewPackageApp = false;
 
   grunt.registerMultiTask('chromeManifest', '', function () {
     var options = this.options({
@@ -19,6 +20,13 @@ module.exports = function (grunt) {
       var src = file.src[0];
       var dest = file.dest;
       var manifest = grunt.file.readJSON(path.join(src, 'manifest.json'));
+      if(!manifest.background){
+        if(manifest.app.background){
+          manifest.background = manifest.app.background;
+          isNewPackageApp = true;
+        }
+      }
+
       var background = path.join(dest, options.background.target);
       var exclude = options.background.exclude;
       var concat = grunt.config('concat') || {};
@@ -63,6 +71,9 @@ module.exports = function (grunt) {
       grunt.config(options.uglify, uglify);
 
       // set updated build number to manifest on dest.
+      if(isNewPackageApp){
+        delete manifest.background;
+      }
       if (options.buildnumber) {
         var versionUp = function (numbers, index) {
           if (!numbers[index]) {
@@ -80,8 +91,9 @@ module.exports = function (grunt) {
       }
 
       // set updated background script list to manifest on dest.
-      manifest.background.scripts = [options.background.target];
-
+      if(!isNewPackageApp){
+        manifest.background.scripts = [options.background.target];
+      }
       // write updated manifest to dest path
       grunt.file.write(path.join(dest, 'manifest.json'), JSON.stringify(manifest, null, options.indentSize));
     });
