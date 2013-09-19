@@ -9,7 +9,7 @@ module.exports = function (grunt) {
   grunt.registerMultiTask('chromeManifest', '', function () {
     var options = this.options({
       buildnumber: false,
-      background: 'background.js',
+      background: null,
       uglify: 'uglify',
       cssmin: 'cssmin',
       indentSize: 4
@@ -19,43 +19,59 @@ module.exports = function (grunt) {
       var src = file.src[0];
       var dest = file.dest;
       var manifest = grunt.file.readJSON(path.join(src, 'manifest.json'));
-      var background = path.join(dest, options.background.target);
-      var exclude = options.background.exclude;
       var concat = grunt.config('concat') || {};
       var uglify = grunt.config(options.uglify) || {};
       var cssmin = grunt.config(options.cssmin) || {};
       var buildnumber = manifest.version.split('.');
 
-      // update concat config for scripts in background field.
-      concat.background = {
-        src: [],
-        dest: background
-      };
+      if (options.background) {
+        if (options.background.target) {
 
-      _.each(manifest.background.scripts, function (script) {
-        if (_.indexOf(exclude, script) === -1) {
-          concat.background.src.push(path.join(src, script));
-        }
-      });
+          if (manifest.background && manifest.background.page) {
+            grunt.fail.warn('incompatible background.target option with manifest.background.page');
+          }
 
-      // remove file in manifest.json
-      _.each(exclude, function(script) {
-        manifest.background.scripts = _.without(manifest.background.scripts, script);
-      })
+          var background = path.join(dest, options.background.target);
 
-      // update uglify config for concated background.js.
-      uglify[background] = background;
+          // update concat config for scripts in background field.
+          concat.background = {
+            src: [],
+            dest: background
+          };
 
-      // update uglify and css config for content scripts field.
-      _.each(manifest.content_scripts, function (contentScript) {
-        _.each(contentScript.js, function (js) {
-          uglify[path.join(dest, js)] = path.join(src, js);
+          var exclude = options.background.exclude;
+
+          if (exclude && manifest.background && manifest.background.scripts) {
+            _.each(manifest.background.scripts, function (script) {
+              if (_.indexOf(exclude, script) === -1) {
+                concat.background.src.push(path.join(src, script));
+              }
+            });
+
+            // remove file in manifest.json
+            _.each(exclude, function (script) {
+              manifest.background.scripts = _.without(manifest.background.scripts, script);
+            });
+          }
+
+          // update uglify config for concated background.js.
+          uglify[background] = background;
+        
+        } // if background.options.target
+      } // if background
+
+      if (manifest.content_scripts) {
+        // update uglify and css config for content scripts field.
+        _.each(manifest.content_scripts, function (contentScript) {
+          _.each(contentScript.js, function (js) {
+            uglify[path.join(dest, js)] = path.join(src, js);
+          });
+
+          _.each(contentScript.css, function (css) {
+            cssmin[path.join(dest, css)] = path.join(src, css);
+          });
         });
-
-        _.each(contentScript.css, function (css) {
-          cssmin[path.join(dest, css)] = path.join(src, css);
-        });
-      });
+      }
 
       // update grunt configs.
       grunt.config('concat', concat);
@@ -79,8 +95,12 @@ module.exports = function (grunt) {
         grunt.file.write(path.join(src, 'manifest.json'), JSON.stringify(manifest, null, options.indentSize));
       }
 
-      // set updated background script list to manifest on dest.
-      manifest.background.scripts = [options.background.target];
+      if (options.background && options.background.target) {
+        if (!manifest.background) { manifest.background = {}; }
+
+        // set updated background script list to manifest on dest.
+        manifest.background.scripts = [options.background.target];
+      }
 
       // write updated manifest to dest path
       grunt.file.write(path.join(dest, 'manifest.json'), JSON.stringify(manifest, null, options.indentSize));

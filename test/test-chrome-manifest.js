@@ -124,4 +124,49 @@ describe('chrome', function () {
     assert.equal(manifest.version, '0.0.2');
   });
 
+  it('should do nothing with background', function () {
+    var target = {
+      options: {},
+      src: 'app',
+      dest: 'dist'
+    };
+
+    var manifest = grunt.file.readJSON(path.join(__dirname, 'fixtures/manifest.json'));
+    manifest.background = null;
+    grunt.file.write(path.join(target.src, 'manifest.json'), JSON.stringify(manifest, null, 4));
+
+    grunt.log.muted = false;
+    grunt.config.init();
+    grunt.config('chromeManifest', {dist: target});
+    grunt.task.run('chromeManifest:dist');
+    grunt.task.start();
+
+    // check updated manifest.json
+    manifest = grunt.file.readJSON(path.join(target.dest, 'manifest.json'));
+    assert.equal(manifest.background, null);
+  });
+
+  it('should preserve background page only', function () {
+    var target = {
+      options: {},
+      src: 'app',
+      dest: 'dist'
+    };
+
+    var manifest = grunt.file.readJSON(path.join(__dirname, 'fixtures/manifest.json'));
+    manifest.background = { page: 'background.html' };
+    grunt.file.write(path.join(target.src, 'manifest.json'), JSON.stringify(manifest, null, 4));
+
+    grunt.log.muted = false;
+    grunt.config.init();
+    grunt.config('chromeManifest', {dist: target});
+    grunt.task.run('chromeManifest:dist');
+    grunt.task.start();
+
+    // check updated manifest.json
+    manifest = grunt.file.readJSON(path.join(target.dest, 'manifest.json'));
+    assert.equal(manifest.background.page, 'background.html');
+    assert.equal(manifest.background.scripts, undefined);
+  });
+
 });
