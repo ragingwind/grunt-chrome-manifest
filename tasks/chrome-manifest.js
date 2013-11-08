@@ -56,15 +56,10 @@ module.exports = function (grunt) {
           }
         });
 
-        // remove file in manifest.json
-        _.each(exclude, function(script) {
-          background.scripts = _.without(background.scripts, script);
-        });
-
-        // update uglify config for concated background js
+        // Add concated background js to uglify task
         uglify[target] = target;
 
-        // Set target background script list to manifest.
+        // Change background script in manifest to target script path
         background.scripts = [options.background.target];
       }
 
