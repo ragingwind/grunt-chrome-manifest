@@ -1,5 +1,13 @@
 'use strict';
 
+// packaged app
+//      http://developer.chrome.com/apps/app_lifecycle.html#top
+// hosted app
+//      https://developers.google.com/chrome/apps/docs/developers_guide?csw=1
+// extension
+//      http://developer.chrome.com/extensions/background_pages.html
+//      http://developer.chrome.com/extensions/event_pages.html
+
 var path = require('path');
 
 module.exports = function (grunt) {
@@ -8,8 +16,8 @@ module.exports = function (grunt) {
 
   grunt.registerMultiTask('chromeManifest', '', function () {
     var options = this.options({
-      buildnumber: false,
-      background: 'background.js',
+      buildnumber: 'overwrite',
+      background: null,
       uglify: 'uglify',
       cssmin: 'cssmin',
       indentSize: 4
@@ -18,35 +26,51 @@ module.exports = function (grunt) {
     this.files.forEach(function (file) {
       var src = file.src[0];
       var dest = file.dest;
-      var manifest = grunt.file.readJSON(path.join(src, 'manifest.json'));
-      var background = path.join(dest, options.background.target);
-      var exclude = options.background.exclude;
       var concat = grunt.config('concat') || {};
       var uglify = grunt.config(options.uglify) || {};
       var cssmin = grunt.config(options.cssmin) || {};
+      var manifest = grunt.file.readJSON(path.join(src, 'manifest.json'));
       var buildnumber = manifest.version.split('.');
+      var background;
 
-      // update concat config for scripts in background field.
-      concat.background = {
-        src: [],
-        dest: background
-      };
+      // Detect type of background fiel
+      if (manifest.app && manifest.app.background) {
+        background = manifest.app.background;
+      } else if (manifest.background && manifest.background.scripts) {
+        background = manifest.background;
+      }
 
-      _.each(manifest.background.scripts, function (script) {
-        if (_.indexOf(exclude, script) === -1) {
-          concat.background.src.push(path.join(src, script));
-        }
-      });
+      if (background) {
+        var target = path.join(dest, options.background.target);
+        var exclude = options.background.exclude;
 
-      // remove file in manifest.json
-      _.each(exclude, function(script) {
-        manifest.background.scripts = _.without(manifest.background.scripts, script);
-      })
+        // update concat config for scripts in background field.
+        concat.background = {
+          src: [],
+          dest: target
+        };
 
-      // update uglify config for concated background.js.
-      uglify[background] = background;
+        _.each(background.scripts, function (script) {
+          if (_.indexOf(exclude, script) === -1) {
+            concat.background.src.push(path.join(src, script));
+          }
+        });
 
-      // update uglify and css config for content scripts field.
+        // remove file in manifest.json
+        _.each(exclude, function(script) {
+          background.scripts = _.without(background.scripts, script);
+        });
+
+        // update uglify config for concated background js
+        uglify[target] = target;
+
+        // Set target background script list to manifest.
+        background.scripts = [options.background.target];
+      }
+
+      // Add contents scripts and css to uglify and cssmin task
+      // Will not add script to uglify task.
+      // Keep each content scripts to use from different match patterns.
       _.each(manifest.content_scripts, function (contentScript) {
         _.each(contentScript.js, function (js) {
           uglify[path.join(dest, js)] = path.join(src, js);
@@ -57,16 +81,17 @@ module.exports = function (grunt) {
         });
       });
 
-      // update grunt configs.
+      // Update each grunt configs.
       grunt.config('concat', concat);
       grunt.config(options.cssmin, cssmin);
       grunt.config(options.uglify, uglify);
 
-      // set updated build number to manifest on dest.
-      if (options.buildnumber) {
+      // Increase build number that from origin manifest
+      if (options.buildnumber === 'overwrite' || options.buildnumber === 'update') {
         var versionUp = function (numbers, index) {
           if (!numbers[index]) {
-            throw 'Build number overflow.' + numbers;
+            grunt.fail.fatal('Build number has overflowing ' + numbers);
+            throw 'Build number overflow ' + numbers;
           }
           if (numbers[index] + 1 <= 65535) {
             numbers[index]++;
@@ -75,15 +100,20 @@ module.exports = function (grunt) {
             versionUp(numbers, ++index);
           }
         };
+
         manifest.version = versionUp(buildnumber, buildnumber.length - 1);
-        grunt.file.write(path.join(src, 'manifest.json'), JSON.stringify(manifest, null, options.indentSize));
+
+        grunt.log.writeln('Build number has changed to ' + grunt.log.wordlist(buildnumber));
+
+        if (options.buildnumber === 'overwrite') {
+            grunt.file.write(path.join(src, 'manifest.json'),
+                JSON.stringify(manifest, null, options.indentSize));
+        }
       }
 
-      // set updated background script list to manifest on dest.
-      manifest.background.scripts = [options.background.target];
-
-      // write updated manifest to dest path
-      grunt.file.write(path.join(dest, 'manifest.json'), JSON.stringify(manifest, null, options.indentSize));
+      // Write updated manifest to destination.
+      grunt.file.write(path.join(dest, 'manifest.json'),
+            JSON.stringify(manifest, null, options.indentSize));
     });
   });
 };

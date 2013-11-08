@@ -1,12 +1,14 @@
 {
   "name": "grunt-chrome-manifest",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "",
   "keywords": [
     "gruntplugin",
     "grunt",
     "yeoman",
     "chrome",
+    "chrome extensions",
+    "chrome apps",
     "manifest"
   ],
   "homepage": "",
@@ -20,7 +22,8 @@
   "scripts": {
     "test": "grunt"
   },
-  "dependencies": {},
+  "dependencies": {
+  },
   "devDependencies": {
     "grunt": "~0.4.0",
     "mocha": "~1.7.4",
