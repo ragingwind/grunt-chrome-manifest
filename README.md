@@ -36,7 +36,7 @@ chrome-manifest is composed of 3 steps:
 chromeManifest: {
   dist: {
     options: {
-      buildnumber: true,
+      buildnumber: 'both',
       background: {
         target: 'scripts/background.js',
         exclude: [
@@ -66,7 +66,7 @@ Base directory where the transformed files should be output.
 
 ### Options
 #### buildnumber
-Type: `String` `Boolean` Default: empty string, `false`
+Type: `String` `Boolean` Default: `undefined`, `false`
 
 Auto-increment types. Can be:
 
