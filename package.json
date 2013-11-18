@@ -1,6 +1,6 @@
 {
   "name": "grunt-chrome-manifest",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "",
   "keywords": [
     "gruntplugin",
@@ -22,8 +22,7 @@
   "scripts": {
     "test": "grunt"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "grunt": "~0.4.0",
     "mocha": "~1.7.4",
