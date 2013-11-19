@@ -1,10 +1,9 @@
 'use strict';
 
-var path = require('path');
+var path = require('path'),
+_ = require('lodash');
 
 module.exports = function (grunt) {
-
-  var _ = grunt.util._;
 
   grunt.registerMultiTask('chromeManifest', '', function () {
     var options = this.options({
