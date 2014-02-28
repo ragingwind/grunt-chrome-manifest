@@ -104,13 +104,10 @@ module.exports = function (grunt) {
         }
 
         grunt.log.writeln('Build number has changed to ' + grunt.log.wordlist(buildnumber));
-      } else if ((/option/).test(options.buildnumber)) {
-        // Set version from options
-        if (options.version) {
-          manifest.version = options.version;
-        } else {
-          grunt.fail.fatal("Option 'version' required for 'buildnumber:option'");
-        }
+      } else if ((/^\d+(\.\d+){0,3}$/).test(options.buildnumber)) {
+        // Set version from string
+        manifest.version = options.buildnumber;
+        grunt.log.writeln('Build number has changed to ' + manifest.version);
       }
 
       // Write updated manifest to destination.

@@ -72,26 +72,8 @@ Auto-increment types. Can be:
 
   - `dest`: increase build number in dest only
   - `both`: increase build number in both origin and dest
-  - `option`: set manifest version from 'version' option in task config
+  - `String`: version in [this format](http://developer.chrome.com/apps/manifest/version) 
   - `undefined`, `false`: do not increase build number
-
-#### version
-Type: `String`
-
-Version string for manifest (works only if buildnumber is 'option')
-##### Example usage
-```javascript
-chromeManifest: {
-  dist: {
-    options: {
-      buildnumber: 'option',
-      version: '<%= pkg.version %>'
-    },
-    src: 'app',
-    dest: 'dist'
-  }
-};
-```
 
 #### background
 

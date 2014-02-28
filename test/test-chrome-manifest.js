@@ -140,6 +140,24 @@ describe('Chrome manifest', function () {
 
     target.options.buildnumber = 'both';
     testBuildnumber(target, '0.0.3', '0.0.3');
+
+    target.options.buildnumber = '1';
+    testBuildnumber(target, '0.0.3', '1');
+
+    target.options.buildnumber = '0.1';
+    testBuildnumber(target, '0.0.3', '0.1');
+
+    target.options.buildnumber = '0.1.1';
+    testBuildnumber(target, '0.0.3', '0.1.1');
+
+    target.options.buildnumber = '0.1.1.1';
+    testBuildnumber(target, '0.0.3', '0.1.1.1');
+
+    target.options.buildnumber = '0.1.1.1.2';
+    testBuildnumber(target, '0.0.3', '0.0.3');
+
+    target.options.buildnumber = '0.str.1';
+    testBuildnumber(target, '0.0.3', '0.0.3');
   });
 
   it('should support backgrounds of chrome app and extension', function () {
