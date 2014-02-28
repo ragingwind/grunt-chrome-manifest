@@ -109,7 +109,7 @@ describe('Chrome manifest', function () {
 
   it('should update the buildnumber', function () {
     var target = _.clone(targets.dist, true);
-    var testBuildnumber = function(target, srcExpect, destExpect) {
+    var testBuildnumber = function (target, srcExpect, destExpect) {
       var manifest;
 
       grunt.config.init();
@@ -140,12 +140,30 @@ describe('Chrome manifest', function () {
 
     target.options.buildnumber = 'both';
     testBuildnumber(target, '0.0.3', '0.0.3');
+
+    target.options.buildnumber = '1';
+    testBuildnumber(target, '0.0.3', '1');
+
+    target.options.buildnumber = '0.1';
+    testBuildnumber(target, '0.0.3', '0.1');
+
+    target.options.buildnumber = '0.1.1';
+    testBuildnumber(target, '0.0.3', '0.1.1');
+
+    target.options.buildnumber = '0.1.1.1';
+    testBuildnumber(target, '0.0.3', '0.1.1.1');
+
+    target.options.buildnumber = '0.1.1.1.2';
+    testBuildnumber(target, '0.0.3', '0.0.3');
+
+    target.options.buildnumber = '0.str.1';
+    testBuildnumber(target, '0.0.3', '0.0.3');
   });
 
   it('should support backgrounds of chrome app and extension', function () {
     var target = _.clone(targets.dist, true);
     var manifest = grunt.file.readJSON(path.join(__dirname, 'fixtures/manifest.json'));
-    var doTask = function(manifest) {
+    var doTask = function (manifest) {
       grunt.file.write(path.join(target.src, 'manifest.json'), JSON.stringify(manifest, null, 4));
 
       grunt.config.init();

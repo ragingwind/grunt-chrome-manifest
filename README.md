@@ -72,6 +72,7 @@ Auto-increment types. Can be:
 
   - `dest`: increase build number in dest only
   - `both`: increase build number in both origin and dest
+  - `String`: version in [this format](http://developer.chrome.com/apps/manifest/version) 
   - `undefined`, `false`: do not increase build number
 
 #### background

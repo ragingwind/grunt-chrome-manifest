@@ -16,7 +16,9 @@ module.exports = function (grunt) {
     });
 
     // Correct value of option for backwarding compatibility
-    if (options.buildnumber === true) options.buildnumber = 'both';
+    if (options.buildnumber === true) {
+      options.buildnumber = 'both';
+    }
 
     this.files.forEach(function (file) {
       var src = file.src[0];
@@ -104,6 +106,10 @@ module.exports = function (grunt) {
         }
 
         grunt.log.writeln('Build number has changed to ' + grunt.log.wordlist(buildnumber));
+      } else if ((/^\d+(\.\d+){0,3}$/).test(options.buildnumber)) {
+        // Set version from string
+        manifest.version = options.buildnumber;
+        grunt.log.writeln('Build number has changed to ' + manifest.version);
       }
 
       // Write updated manifest to destination.
