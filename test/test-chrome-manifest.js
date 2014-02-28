@@ -109,7 +109,7 @@ describe('Chrome manifest', function () {
 
   it('should update the buildnumber', function () {
     var target = _.clone(targets.dist, true);
-    var testBuildnumber = function(target, srcExpect, destExpect) {
+    var testBuildnumber = function (target, srcExpect, destExpect) {
       var manifest;
 
       grunt.config.init();
@@ -163,7 +163,7 @@ describe('Chrome manifest', function () {
   it('should support backgrounds of chrome app and extension', function () {
     var target = _.clone(targets.dist, true);
     var manifest = grunt.file.readJSON(path.join(__dirname, 'fixtures/manifest.json'));
-    var doTask = function(manifest) {
+    var doTask = function (manifest) {
       grunt.file.write(path.join(target.src, 'manifest.json'), JSON.stringify(manifest, null, 4));
 
       grunt.config.init();

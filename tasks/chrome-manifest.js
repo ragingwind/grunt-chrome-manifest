@@ -16,7 +16,9 @@ module.exports = function (grunt) {
     });
 
     // Correct value of option for backwarding compatibility
-    if (options.buildnumber === true) options.buildnumber = 'both';
+    if (options.buildnumber === true) {
+      options.buildnumber = 'both';
+    }
 
     this.files.forEach(function (file) {
       var src = file.src[0];
