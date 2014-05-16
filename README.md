@@ -81,7 +81,7 @@ Auto-increment types. Can be:
 - exclude: `String`, Javascript files to exclude.
 
 #### overwrite
-Type: `Object` `Boolean` Default: `undefined`
+Type: `Object` Default: `undefined`
 
 Overwrite in manifest keys from object.
 
