@@ -112,6 +112,13 @@ module.exports = function (grunt) {
         grunt.log.writeln('Build number has changed to ' + manifest.version);
       }
 
+      // Overwrite options
+      if (options.overwrite) {
+        for (var key in options.overwrite) {
+          manifest[key] = options.overwrite[key];
+        }
+      }
+
       // Write updated manifest to destination.
       grunt.file.write(path.join(dest, 'manifest.json'),
             JSON.stringify(manifest, null, options.indentSize));

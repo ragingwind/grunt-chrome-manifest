@@ -198,4 +198,27 @@ describe('Chrome manifest', function () {
     assert.equal(manifest.app.background.scripts[0], target.options.background.target);
   });
 
+  it('should overwrite options', function () {
+    var target = _.clone(targets.dist, true);
+    grunt.file.copy(path.join(__dirname, 'fixtures/manifest.json'), 'app/manifest.json');
+
+    target.options.overwrite = {
+      test: 'test',
+      obj: {
+        'option': 'option 1'
+      },
+      arr: ['item 1', 'item 2', 'item 3']
+    };
+
+    grunt.config.init();
+    grunt.config('chromeManifest', {dist: target});
+    grunt.task.run('chromeManifest:dist');
+    grunt.task.start();
+
+    var manifest = grunt.file.readJSON(path.join(target.dest, 'manifest.json'));
+    for (var key in target.options.overwrite) {
+      assert.equal(JSON.stringify(manifest[key]), JSON.stringify(target.options.overwrite[key]));
+    }
+  });
+
 });
