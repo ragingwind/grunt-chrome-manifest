@@ -80,6 +80,11 @@ Auto-increment types. Can be:
 - target: `String`, Relative path of the transformed(`cssmin` and `uglify`) background script.
 - exclude: `String`, Javascript files to exclude.
 
+#### overwrite
+Type: `Object` Default: `undefined`
+
+Overwrite in manifest keys from object.
+
 ## Tests
 
 Grunt currently doesn't have a way to test tasks directly. You can test this task by running `grunt` and manually verify that it works.
