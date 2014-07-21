@@ -85,6 +85,11 @@ Type: `Object` Default: `undefined`
 
 Overwrite in manifest keys from object.
 
+#### extend
+Type: `Object` Default: `undefined`
+
+Extend manifest with object.
+
 ## Tests
 
 Grunt currently doesn't have a way to test tasks directly. You can test this task by running `grunt` and manually verify that it works.
