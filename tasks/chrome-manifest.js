@@ -1,6 +1,7 @@
 'use strict';
 
 var path = require('path');
+var extend = require('extend');
 
 module.exports = function (grunt) {
 
@@ -117,6 +118,11 @@ module.exports = function (grunt) {
         for (var key in options.overwrite) {
           manifest[key] = options.overwrite[key];
         }
+      }
+
+      // Extend options
+      if(options.extend) {
+        extend(true, manifest, options.extend);
       }
 
       // Write updated manifest to destination.

@@ -207,7 +207,10 @@ describe('Chrome manifest', function () {
       obj: {
         'option': 'option 1'
       },
-      arr: ['item 1', 'item 2', 'item 3']
+      arr: ['item 1', 'item 2', 'item 3'],
+      test_extend: {
+        overwrite: 'test'
+      }
     };
 
     grunt.config.init();
@@ -216,9 +219,32 @@ describe('Chrome manifest', function () {
     grunt.task.start();
 
     var manifest = grunt.file.readJSON(path.join(target.dest, 'manifest.json'));
+
     for (var key in target.options.overwrite) {
       assert.equal(JSON.stringify(manifest[key]), JSON.stringify(target.options.overwrite[key]));
     }
+    assert.equal(manifest['test_extend']['keep'], null);
   });
 
+  it('should extend options', function () {
+    var target = _.clone(targets.dist, true);
+    grunt.file.copy(path.join(__dirname, 'fixtures/manifest.json'), 'app/manifest.json');
+
+    target.options.extend = {
+      test_extend: {
+        overwrite: 'test'
+      }
+    };
+
+    grunt.config.init();
+    grunt.config('chromeManifest', {dist: target});
+    grunt.task.run('chromeManifest:dist');
+    grunt.task.start();
+
+    var manifest = grunt.file.readJSON(path.join(target.dest, 'manifest.json'));
+    var manifestOrigin = grunt.file.readJSON(path.join(target.src, 'manifest.json'));
+
+    assert.equal(manifest['test_extend']['overwrite'], target.options.extend['test_extend']['overwrite']);
+    assert.equal(manifest['test_extend']['keep'], manifestOrigin['test_extend']['keep']);
+  });
 });

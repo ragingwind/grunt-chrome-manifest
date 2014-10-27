@@ -39,5 +39,10 @@
         "scripts/contentscript-11.js"
       ]
     }
-  ]
+  ],
+  "test_extend": {
+    "overwrite": "overwrite",
+    "keep": "keep",
+    "arr": ["item 1", "item 2", "item 3"]
+  }
 }
