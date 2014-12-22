@@ -12,7 +12,8 @@ module.exports = function (grunt) {
       background: null,
       uglify: 'uglify',
       cssmin: 'cssmin',
-      indentSize: 4
+      indentSize: 4,
+      removeFields: ['key']
     });
 
     // Correct value of option for backwarding compatibility
@@ -117,6 +118,11 @@ module.exports = function (grunt) {
         for (var key in options.overwrite) {
           manifest[key] = options.overwrite[key];
         }
+      }
+
+      //remove fields
+      for (var fieldKey in options.removeFields) {
+        delete manifest[options.removeFields[fieldKey]];
       }
 
       // Write updated manifest to destination.
