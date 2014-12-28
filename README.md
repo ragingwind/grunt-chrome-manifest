@@ -72,7 +72,7 @@ Auto-increment types. Can be:
 
   - `dest`: increase build number in dest only
   - `both`: increase build number in both origin and dest
-  - `String`: version in [this format](http://developer.chrome.com/apps/manifest/version) 
+  - `String`: version in [this format](http://developer.chrome.com/apps/manifest/version)
   - `undefined`, `false`: do not increase build number
 
 #### background
@@ -84,6 +84,11 @@ Auto-increment types. Can be:
 Type: `Object` Default: `undefined`
 
 Overwrite in manifest keys from object.
+
+#### removeFields
+Type: `Array[String]` Default: `['key']`
+
+Remove fields from manifest.json. The key field is removed by default as it is not allowed by the chrome webstore.
 
 ## Tests
 
