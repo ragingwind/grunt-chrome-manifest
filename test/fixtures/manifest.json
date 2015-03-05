@@ -39,5 +39,6 @@
         "scripts/contentscript-11.js"
       ]
     }
-  ]
+  ],
+  "key": "test-key"
 }

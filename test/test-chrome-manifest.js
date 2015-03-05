@@ -225,7 +225,7 @@ describe('Chrome manifest', function () {
     var target = _.clone(targets.dist, true);
     grunt.file.copy(path.join(__dirname, 'fixtures/manifest.json'), 'app/manifest.json');
 
-    target.options.removeFields = ['manifest_version'];
+    target.options.removeFields = ['manifest_version', 'key'];
 
     grunt.config.init();
     grunt.config('chromeManifest', {dist: target});
@@ -233,6 +233,7 @@ describe('Chrome manifest', function () {
     grunt.task.start();
 
     var manifest = grunt.file.readJSON(path.join(target.dest, 'manifest.json'));
+
     for (var key in target.options.removeFields) {
       assert(!(manifest.hasOwnProperty(target.options.removeFields[key])));
     }
