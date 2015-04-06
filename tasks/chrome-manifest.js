@@ -40,27 +40,31 @@ module.exports = function (grunt) {
       }
 
       if (background) {
-        var target = path.join(dest, options.background.target);
-        var exclude = options.background.exclude;
+        if (options.background.target) {
+          var target = path.join(dest, options.background.target);
 
-        // update concat config for scripts in background field.
-        concat.background = {
-          src: [],
-          dest: target
-        };
+          // update concat config for scripts in background field.
+          concat.background = {
+            src: [],
+            dest: target
+          };
 
-        // exclude the scripts from concat task
-        _.each(background.scripts, function (script) {
-          if (_.indexOf(exclude, script) === -1) {
-            concat.background.src.push(path.join(src, script));
-          }
-        });
+          // exclude the scripts from concat task
+          _.each(background.scripts, function (script) {
+            if (_.indexOf(options.background.exclude, script) === -1) {
+              concat.background.src.push(path.join(src, script));
+            }
+          });
 
-        // Add concated background js to uglify task
-        uglify[target] = target;
+          // Add concated background js to uglify task
+          uglify[target] = target;
 
-        // Change background script in manifest to target script path
-        background.scripts = [options.background.target];
+          // set script from scripts in target
+          background.scripts = [options.background.target];
+        } else {
+          // remove background.scripts if target is not given
+          delete background.scripts;
+        }
       }
 
       // Add contents scripts and css to uglify and cssmin task

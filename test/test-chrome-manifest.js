@@ -239,4 +239,27 @@ describe('Chrome manifest', function () {
     }
   });
 
+  it('should support no-target for background', function () {
+    var concat, uglify, cssmin, manifest;
+    var target = _.clone(targets.dist, true);
+    var dest = target.dest;
+    var manifest = grunt.file.readJSON(path.join(__dirname, 'fixtures/manifest.json'));
+
+    // Removing target option leads to a result of output empty script in background.js.
+    delete target.options.background.target;
+    grunt.file.write('app/manifest.json', JSON.stringify(manifest, null, 4));
+
+    grunt.config.init();
+    grunt.config('chromeManifest', {dist: target});
+    grunt.task.run('chromeManifest:dist');
+    grunt.task.start();
+
+    concat = grunt.config('concat');
+    uglify = grunt.config('uglify');
+    cssmin = grunt.config('cssmin');
+    manifest = grunt.file.readJSON(path.join(dest, 'manifest.json'));
+
+    assert.equal(Object.keys(concat).length, 0);
+    assert.equal(manifest.background.scripts, undefined);
+  });
 });
