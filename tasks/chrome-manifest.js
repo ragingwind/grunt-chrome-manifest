@@ -61,9 +61,17 @@ module.exports = function (grunt) {
 
           // set script from scripts in target
           background.scripts = [options.background.target];
+
         } else {
-          // remove background.scripts if target is not given
-          delete background.scripts;
+
+          // only apply exclude rules if target is not given
+          _.each(background.scripts, function (script) {
+            if (_.indexOf(options.background.exclude, script) >= 0) {
+              var expos = background.scripts.indexOf(script);
+              if(expos >= 0) background.scripts.splice(expos, 1);
+            }
+          });
+
         }
       }
 
