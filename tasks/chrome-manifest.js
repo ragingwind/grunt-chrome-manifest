@@ -24,10 +24,11 @@ module.exports = function (grunt) {
     this.files.forEach(function (file) {
       var src = file.src[0];
       var dest = file.dest;
+      var srcManifest = file.manifest || path.join(src, 'manifest.json');
       var concat = grunt.config('concat') || {};
       var uglify = grunt.config(options.uglify) || {};
       var cssmin = grunt.config(options.cssmin) || {};
-      var manifest = grunt.file.readJSON(path.join(src, 'manifest.json'));
+      var manifest = grunt.file.readJSON(srcManifest);
       var originManifest = _.clone(manifest, true);
       var buildnumber = manifest.version.split('.');
       var background = null;
@@ -106,8 +107,7 @@ module.exports = function (grunt) {
         // Update version of origin manifest.json
         if (options.buildnumber === 'both') {
           originManifest.version = manifest.version;
-          grunt.file.write(path.join(src, 'manifest.json'),
-                JSON.stringify(originManifest, null, options.indentSize));
+          grunt.file.write(srcManifest, JSON.stringify(originManifest, null, options.indentSize));
         }
 
         grunt.log.writeln('Build number has changed to ' + grunt.log.wordlist(buildnumber));

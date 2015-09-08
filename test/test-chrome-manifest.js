@@ -240,7 +240,7 @@ describe('Chrome manifest', function () {
   });
 
   it('should support no-target for background', function () {
-    var concat, uglify, cssmin, manifest;
+    var concat, uglify, cssmin;
     var target = _.clone(targets.dist, true);
     var dest = target.dest;
     var manifest = grunt.file.readJSON(path.join(__dirname, 'fixtures/manifest.json'));
@@ -261,5 +261,22 @@ describe('Chrome manifest', function () {
 
     assert.equal(Object.keys(concat).length, 0);
     assert.equal(manifest.background.scripts, undefined);
+  });
+  
+  it('should read by specificated path for manifest', function () {
+    var concat;
+    var target = _.clone(targets.dist, true);
+    var background = path.join(target.dest, target.options.background.target || 'background.js');
+    
+    target.manifest = path.join(__dirname, 'fixtures/manifest.json');
+    
+    grunt.config.init();
+    grunt.config('chromeManifest', {dist: target});
+    grunt.task.run('chromeManifest:dist');
+    grunt.task.start();
+    
+    concat = grunt.config('concat');
+
+    assert.equal(concat.background.dest, background);
   });
 });

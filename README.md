@@ -45,7 +45,8 @@ chromeManifest: {
       }
     },
     src: 'app',
-    dest: 'dist'
+    dest: 'dist',
+    manifest: 'app/manifest.json'
   }
 };
 ```
@@ -63,6 +64,11 @@ Base directory where the origin source files
 Type: `String`
 
 Base directory where the transformed files should be output.
+
+#### manifest
+Type: `String`
+
+Path of the source of `manifest.json`. If it's not set the plugin will be going to read `manifest.json` in `src` path
 
 ### Options
 #### buildnumber
