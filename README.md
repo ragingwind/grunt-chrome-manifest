@@ -102,4 +102,4 @@ Grunt currently doesn't have a way to test tasks directly. You can test this tas
 
 ## License
 
-[BSD license](http://opensource.org/licenses/bsd-license.php) and copyright Google
+MIT © [Jimmy Moon](http://ragingwind.me)
