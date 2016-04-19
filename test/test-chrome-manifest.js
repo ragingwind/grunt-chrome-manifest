@@ -35,6 +35,22 @@ describe('Chrome manifest', function () {
 
   before(directory('temp'));
 
+  /**
+   * Assert that all properties in expected also appear, with the same values,
+   * in actual.
+   */
+  function assertContainsAll(actual, expected) {
+    for (var key in expected) {
+      var type = typeof expected[key];
+      assert.equal(type, typeof actual[key], 'type of value for key ' + key + ' mismatch');
+      if (type === 'object') {
+        assertContainsAll(actual[key], expected[key]);
+      } else {
+        assert.equal(expected[key], actual[key], 'property ' + key + ' must match');
+      }
+    }
+  }
+
   var targets = {
     dist: {
       options: {
@@ -205,7 +221,15 @@ describe('Chrome manifest', function () {
     target.options.overwrite = {
       test: 'test',
       obj: {
-        'option': 'option 1'
+        'option': 'option 1',
+      },
+      icons: {
+        '128': 'images/prod-128.png'
+      },
+      'deep': {
+        'branch': {
+          'leaf': 'yes'
+        }
       },
       arr: ['item 1', 'item 2', 'item 3']
     };
@@ -216,9 +240,8 @@ describe('Chrome manifest', function () {
     grunt.task.start();
 
     var manifest = grunt.file.readJSON(path.join(target.dest, 'manifest.json'));
-    for (var key in target.options.overwrite) {
-      assert.equal(JSON.stringify(manifest[key]), JSON.stringify(target.options.overwrite[key]));
-    }
+    assertContainsAll(manifest, target.options.overwrite);
+    assert.equal('images/icon-32.png', manifest.icons['32']);
   });
 
   it('should remove fields', function () {

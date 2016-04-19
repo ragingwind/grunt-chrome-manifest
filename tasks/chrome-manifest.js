@@ -6,6 +6,28 @@ module.exports = function (grunt) {
 
   var _ = grunt.util._;
 
+  /**
+   * Overwrites all properties in dest with values from src.
+   */
+  function overwrite(dest, src, breadcrumbs) {
+    if (!breadcrumbs) {
+      breadcrumbs = [];
+    }
+    for (var key in src) {
+      if (!(key in dest) || (typeof src[key] !== 'object')) {
+        dest[key] = src[key];
+      } else {
+        if (typeof dest[key] !== 'object') {
+          grunt.fail.warn('attempt to overwrite ' + (typeof dest[key]) + ' with object: ' + breadcrumbs.join('.'));
+        } else {
+          breadcrumbs.push(key);
+          overwrite(dest[key], src[key], breadcrumbs);
+          breadcrumbs.pop();
+        }
+      }
+    }
+  }
+
   grunt.registerMultiTask('chromeManifest', '', function () {
     var options = this.options({
       buildnumber: undefined,
@@ -119,9 +141,7 @@ module.exports = function (grunt) {
 
       // Overwrite options
       if (options.overwrite) {
-        for (var key in options.overwrite) {
-          manifest[key] = options.overwrite[key];
-        }
+        overwrite(manifest, options.overwrite);
       }
 
       //remove fields
